@@ -15,6 +15,12 @@ CREATE TABLE todos (
 );
 
 
+CREATE TABLE user_token (
+ "userId" INTEGER REFERENCES users (id),
+ "refreshToken" VARCHAR(255)
+);
+
+
 
 
 

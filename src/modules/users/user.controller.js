@@ -1,12 +1,23 @@
 const  db = require('../../db')
-const jwt = require("jsonwebtoken")
-const { secret } = require("../config")
 const bcrypt = require('bcrypt')
+const userService = require('./user.service')
 
-const generateAccessToken = (id) => {
-    return jwt.sign({id}, secret, {expiresIn: "24h"})
-}
-class TodoController {
+class UserController {
+    async singUp(req, res, next) {
+      try{
+        const {email, password, username} = req.body
+        const userData = await userService.signUp(email, password, username)
+        res.cookie('refreshToken', userData.refreshToken, {
+          httpOnly: true,
+          maxAge: 30 * 24 * 60 * 60 * 1000
+        })
+        
+        return  res.json(userData)
+      }catch (e) {
+        next()
+      }
+    }
+
     async signIn(req, res) {
         const {email, password} = req.body
 
@@ -27,19 +38,12 @@ class TodoController {
         return res.json(candidate)
     }
 
-    async singUp(req, res) {
-        const {email, password, username} = req.body
+    async logout(req, res) {
 
-        if (!await db.query(`SELECT * FROM users WHERE email = '${ email }';`)) {
-            return res.status(400).json('Почта занята')
-        }
-        const hash = bcrypt.hashSync(password, 7);
+    }
 
-        const newUser = await db.query(`INSERT INTO users (email, password, username) values ($1, $2, $3) RETURNING *`,[email, hash, username])
+    async refresh(req, res) {
 
-        const token = generateAccessToken(req.body.id)
-        const user = newUser.rows[0]
-        res.json({user, token})
     }
 
     async getUser(req, res){
@@ -49,4 +53,4 @@ class TodoController {
     }
 }
 
-module.exports = new TodoController()
+module.exports = new UserController()

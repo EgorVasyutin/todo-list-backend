@@ -32,7 +32,6 @@ class TodoController {
   //     res.json(todos.rows[0])
   // }
   async updateTodo(req, res){
-    const userId = req.headers['user-id']
     const { title ,isDone} = req.body
     const id = req.params.id
     const query = `UPDATE todos set title = ${title}, "isDone" = ${isDone} where id = ${id} RETURNING *`
