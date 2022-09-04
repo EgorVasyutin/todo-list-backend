@@ -1,4 +1,4 @@
-const db = require("../../db");
+const db = require("../db");
 
 const jwt = require("jsonwebtoken");
 
@@ -14,14 +14,18 @@ class TokenService {
   }
 
   saveRefreshToken = async (userId, refreshToken) => {
+    console.log('saveRefreshToken',userId, refreshToken)
     // найти в таблице юзер_токен запись по юзер_айди
-    const userToken = await db.query(`SELECT * FROM user_token WHERE "userId" = '${ userId }';`)
+    const queryResult = await db.query(`SELECT * FROM user_token WHERE "userId" = '${ userId }';`)
+    const userToken = queryResult.rows[0]
+    console.log(1, userToken)
     // если запись есть то мы обновляем рефреш токен,
     if (userToken) {
       const query = `UPDATE user_token set "refreshToken" = ${refreshToken} where "userId" = ${userId} RETURNING *`
 
       db.query(query)
         .then((result) => {
+          console.log(2, result)
           return result.rows[0]
         })
         .catch(() => {
@@ -29,10 +33,12 @@ class TokenService {
         })
     }
     // если нет то создаем запись с изер айди и рефреш токеном
-    const newUserToken = await db.query(`INSERT INTO user_token ("userId", "refreshToken") values ($1, $2) RETURNING *`,[userId, refreshToken])
-
-    return newUserToken.rows[0]
-
+    try {
+      const createQueryResult = await db.query(`INSERT INTO user_token ("userId", "refreshToken") values ($1, $2) RETURNING *`,[userId, refreshToken])
+      return createQueryResult.rows[0]
+    }catch (e) {
+      console.log(e)
+    }
   }
 }
 
