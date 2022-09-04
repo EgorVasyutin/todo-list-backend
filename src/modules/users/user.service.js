@@ -22,6 +22,27 @@ class UserService {
 
     return { ...tokens, user: newUser }
   }
+
+  async signIn(email, password) {
+    const queryResult = await db.query(`SELECT * FROM users WHERE email = '${ email }';`)
+    const candidate = queryResult.rows[0]
+
+    if (!candidate) {
+      throw ErrorService.BadRequest('Пользователь не найден')
+    }
+
+    const passwordsEqual = bcrypt.compareSync(password, candidate.password)
+    // console.log(password)
+    // console.log(candidate.password)
+    if (!passwordsEqual) {
+      throw ErrorService.BadRequest('Неверный пароль')
+    }
+
+    const tokens = tokenService.generateTokens(candidate)
+    await tokenService.saveRefreshToken(candidate.id, tokens.refreshToken)
+
+    return { ...tokens, user: candidate }
+  }
 }
 
 module.exports = new UserService()

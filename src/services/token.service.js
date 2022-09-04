@@ -1,6 +1,7 @@
 const db = require("../db");
 
 const jwt = require("jsonwebtoken");
+const {query} = require("express");
 
 class TokenService {
   generateTokens = (payload) => {
@@ -39,6 +40,29 @@ class TokenService {
     }catch (e) {
       console.log(e)
     }
+  }
+
+  validateAccessToken(token) {
+    try {
+      return jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  validateRefreshToken(token) {
+    try {
+      return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async removeToken(refreshToken) {
+    const queryResult = await db.query(`DELETE FROM user_token where "refreshToken" = ${refreshToken};`)
+    const tokenData = queryResult.rows[0]
+    console.log(tokenData, queryResult)
+    return tokenData;
   }
 }
 

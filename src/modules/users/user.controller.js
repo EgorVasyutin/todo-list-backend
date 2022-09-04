@@ -23,22 +23,13 @@ class UserController {
     async signIn(req, res, next) {
       try {
         const {email, password} = req.body
+        const userData = await userService.signIn(email, password)
+        res.cookie('refreshToken', userData.refreshToken, {
+          httpOnly: true,
+          maxAge: 30 * 24 * 60 * 60 * 1000
+        })
 
-        const response = await db.query(`SELECT * FROM users WHERE email = '${ email }';`)
-        const candidate = response.rows[0]
-
-        if (!candidate) {
-          return res.status(400).json('Пользователь не найден')
-        }
-
-        const passwordsEqual = bcrypt.compareSync(password, candidate.password)
-        // console.log(password)
-        // console.log(candidate.password)
-        if (!passwordsEqual) {
-          return res.status(400).json('Неверный пароль')
-        }
-
-        return res.json(candidate)
+        return  res.json(userData)
       } catch (e) {
         next(e)
       }
