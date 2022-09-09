@@ -15,40 +15,40 @@ class TokenService {
   }
 
   async saveRefreshToken(userId, refreshToken) {
-    console.log('saveRefreshToken',userId, refreshToken)
-      //`SELECT * FROM user_token WHERE "userId" = '${ userId }';`
-    // найти в таблице юзер_токен запись по юзер_айди
+    console.log('saveRefreshToken', userId, refreshToken)
+
+    // Hайти в таблице юзер_токен запись по юзер_айди
     const query = `SELECT * FROM user_token WHERE "userId" = '${ userId }';`
-    console.log('query', query)
     const queryResult = await db.query(query)
-    console.log('queryResult',queryResult)
     const userTokenRow = queryResult.rows[0]
-    console.log(1, userTokenRow)
+    console.log('saveRefreshToken: userTokenRow', userTokenRow)
 
     // если запись есть то мы обновляем рефреш токен,
     if (userTokenRow) {
-      console.log('userTokenRow')
+      console.log('if userTokenRow')
+
       try {
-         const query = `UPDATE user_token set "refreshToken" = ${refreshToken} where "userId" = '${userId}' RETURNING *`
+        const query = `UPDATE user_token set "refreshToken" = '${refreshToken}' where "userId" = '${userTokenRow.userId}' RETURNING *;`
+        console.log('query', query)
+        const queryResult = await db.query(query)
+        console.log('refresh token updated', queryResult)
 
-         const queryResult = await db.query(query)
-         console.log('refresh token updated', queryResult)
-
-         return queryResult.rows[0]
-      }
+        return queryResult.rows[0]
+}
       catch (e) {
-        throw ErrorService.BadRequest('Ошибка при сохранении refreshToken')
+        throw ErrorService.BadRequest('Ошибка при обновлении refreshToken')
       }
     }
 
-    // если нет то создаем запись с изер айди и рефреш токеном
+    // Если нет - создаем запись с userId и refreshToken
     try {
       console.log('try')
-      const createQueryResult = await db.query(`INSERT INTO user_token ("userId", "refreshToken") values ($1, $2) RETURNING *`,[userId, refreshToken])
+      const query = `INSERT INTO user_token ("userId", "refreshToken") values ($1, $2) RETURNING *`
+      const createQueryResult = await db.query(query,[userId, refreshToken])
       console.log('createQueryResult', createQueryResult)
       return createQueryResult.rows[0]
-    }catch (e) {
-      throw ErrorService.BadRequest('Ошибка при сохранении рефреш токена')
+    } catch (e) {
+      throw ErrorService.BadRequest('Ошибка при сохранении refreshToken')
     }
   }
 
@@ -70,15 +70,25 @@ class TokenService {
 
   async removeToken(refreshToken) {
     console.log("refreshToken", refreshToken)
-    const queryResult = await db.query(`DELETE FROM user_token where "refreshToken" = (E'${refreshToken}');`)
+
+    const query = `DELETE FROM user_token where "refreshToken" = (E'${refreshToken}');`
+    const queryResult = await db.query(query)
     const tokenData = queryResult.rows[0]
-    console.log(tokenData, queryResult)
+    console.log('removeToken: tokenData', tokenData)
+
     return tokenData;
   }
 
   async findToken(refreshToken) {
-    const tokenData = await db.query(`SELECT * FROM user_token WHERE "refreshToken" = (E'${refreshToken}'`)
-    return tokenData
+    try {
+      const query = `SELECT * FROM user_token WHERE "refreshToken" = (E'${refreshToken}')`
+      const queryResult = await db.query(query)
+      const tokenData = queryResult.rows[0]
+
+      return tokenData
+    } catch (e) {
+      throw ErrorService.BadRequest('Ошибка при поиске user_token row по refresh-токену')
+    }
   }
 }
 

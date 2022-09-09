@@ -7,19 +7,19 @@
 --   password VARCHAR(63)
 -- );
 --
-CREATE TABLE todos (
-  id SERIAL PRIMARY KEY,
-  title VARCHAR(255),
-  "isDone" BOOLEAN,
-  userId INTEGER REFERENCES users (id)
-);
-
-
-CREATE TABLE user_token (
- "userId" INTEGER REFERENCES users (id),
- "refreshToken" VARCHAR(255)
-);
-
+-- CREATE TABLE todos (
+--   id SERIAL PRIMARY KEY,
+--   title VARCHAR(255),
+--   "isDone" BOOLEAN,
+--   userId INTEGER REFERENCES users (id)
+-- );
+--
+--
+-- CREATE TABLE user_token (
+--  "userId" INTEGER REFERENCES users (id),
+--  "refreshToken" VARCHAR(255)
+-- );
+--
 
 
 
