@@ -16,7 +16,10 @@ const app = express()
 app
   .use(express.json())
   .use(cookieParser())
-  .use(cors())
+  .use(cors({
+      credentials: true,
+      origin: process.env.CLIENT_URL
+  }))
   .use('/api', userRouter)
   .use('/api/todos', todoRouter)
   .use(errorMiddleware)

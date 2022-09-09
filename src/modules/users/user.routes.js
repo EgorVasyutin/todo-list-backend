@@ -7,7 +7,7 @@ const router = new Router()
 router.post('/sign-up', userController.singUp)
 router.post('/sign-in', userController.signIn)
 router.post('/logout', userController.logout)
-router.post('/refresh', userController.refresh)
+router.get('/refresh', userController.refresh)
 router.get('/users', authMiddleware, userController.getUser)
 
 module.exports = router

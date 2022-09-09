@@ -7,7 +7,6 @@ class UserController {
     async singUp(req, res, next) {
       try {
         const {email, password, username} = req.body
-        console.log(email, password, username)
         const userData = await userService.signUp(email, password, username)
         res.cookie('refreshToken', userData.refreshToken, { 
           httpOnly: true,
@@ -37,7 +36,10 @@ class UserController {
 
     async logout(req, res, next) {
       try {
-
+        const {refreshToken} = req.cookies;
+        const token = await userService.logout(refreshToken)
+        res.clearCookie('refreshToken')
+        return res.json(token)
       } catch (e) {
         next(e)
       }
@@ -45,7 +47,11 @@ class UserController {
 
     async refresh(req, res, next) {
       try {
-
+        const {refreshToken} = req.cookies;
+        console.log(refreshToken)
+        const token = await userService.refresh(refreshToken)
+        res.clearCookie('refreshToken')
+        return res.json(token)
       } catch (e) {
         next(e)
       }
