@@ -5,8 +5,11 @@ const ErrorService = require('../../services/error.service')
 
 class UserService {
   async signUp(email, password, username) {
+    console.log(email, password, username)
     const queryResult = await db.query(`SELECT * FROM users WHERE email = '${ email }';`)
+    console.log(1,queryResult)
     const isEmailExists = queryResult.rows[0]
+    console.log(2,isEmailExists)
 
     if (isEmailExists) {
      throw ErrorService.BadRequest('Почта занята')
