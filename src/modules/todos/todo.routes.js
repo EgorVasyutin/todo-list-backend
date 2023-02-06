@@ -4,10 +4,12 @@ const authMiddleware = require('../../middlewares/auth.middleware')
 
 const router = new Router()
 
-router.post('/', authMiddleware, todoController.createTodo)
-router.get('/', authMiddleware, todoController.getTodos)
-router.put('/:id', authMiddleware, todoController.updateTodo)
-router.delete('/:id', authMiddleware, todoController.deleteTodo)
+router.post('/', todoController.createCard)
+router.get('/', todoController.getCards)
+router.get('/:id', todoController.getOneCard)
+router.put('/:id', todoController.updateTodo)
+router.delete('/:id', todoController.deleteTodo)
+router.patch('/:id', todoController.patch)
 
 module.exports = router
 

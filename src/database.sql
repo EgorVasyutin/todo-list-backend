@@ -1,4 +1,4 @@
--- CREATE database "todo-app";
+-- CREATE database "calendar-app";
 
 -- CREATE TABLE users (
 --   id SERIAL PRIMARY KEY,
@@ -7,13 +7,19 @@
 --   password VARCHAR(63)
 -- );
 --
--- CREATE TABLE todos (
---   id SERIAL PRIMARY KEY,
---   title VARCHAR(255),
---   "isDone" BOOLEAN,
---   userId INTEGER REFERENCES users (id)
--- );
+CREATE TABLE cards (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255),
+  "isDone" BOOLEAN,
+  "priority" VARCHAR (20),
+  "type" VARCHAR (20),
+  "startDate" VARCHAR(255),
+  "endDate" VARCHAR(255),
+  userId INTEGER REFERENCES users (id)
+);
 --
+
+
 --
 -- CREATE TABLE user_token (
 --  "userId" INTEGER REFERENCES users (id),
@@ -22,7 +28,8 @@
 --
 
 
-
+ALTER TABLE cards ADD COLUMN "startDate" VARCHAR(255);
+ALTER TABLE cards ADD COLUMN status VARCHAR(255);
 
 --
 --  ALTER TABLE todo RENAME COLUMN is_done TO isDone;
@@ -37,7 +44,7 @@
 -- INSERT INTO users (username, email, password) VALUES ('Egor','egit@mail.ru', 123456);
 --
 -- ALTER TABLE users
--- ALTER COLUMN password TYPE VARCHAR(255);
+-- ALTER COLUMN status TYPE VARCHAR(255);
 --
 -- ALTER TABLE users ADD COLUMN email VARCHAR(255)
 --

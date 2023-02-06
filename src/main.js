@@ -20,8 +20,8 @@ app
       credentials: true,
       origin: process.env.CLIENT_URL
   }))
-  .use('/api', userRouter)
-  .use('/api/todos', todoRouter)
+  .use('/api_calendar', userRouter)
+  .use('/api_calendar/todos', todoRouter)
   .use(errorMiddleware)
 
 

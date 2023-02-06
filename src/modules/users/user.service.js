@@ -5,11 +5,8 @@ const ErrorService = require('../../services/error.service')
 
 class UserService {
   async signUp(email, password, username) {
-    console.log(email, password, username)
     const queryResult = await db.query(`SELECT * FROM users WHERE email = '${ email }';`)
-    console.log(1,queryResult)
     const isEmailExists = queryResult.rows[0]
-    console.log(2,isEmailExists)
 
     if (isEmailExists) {
      throw ErrorService.BadRequest('Почта занята')
@@ -25,7 +22,7 @@ class UserService {
       const tokens = tokenService.generateTokens(newUser)
       await tokenService.saveRefreshToken(newUser.id, tokens.refreshToken)
 
-      return { ...tokens, user: newUser }
+      return {user: newUser }
 
     } catch (e) {
       throw ErrorService.BadRequest('Ошибка при создании пользователя')
@@ -47,7 +44,7 @@ class UserService {
     const tokens = tokenService.generateTokens(candidate)
     await tokenService.saveRefreshToken(candidate.id, tokens.refreshToken)
 
-    return { ...tokens, user: candidate }
+    return {user: candidate }
   }
 
   async logout(refreshToken) {

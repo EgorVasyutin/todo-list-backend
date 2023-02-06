@@ -8,7 +8,6 @@ module.exports = function (req, res, next) {
 
   try {
     const authorizationHeader = req.headers.authorization
-    console.log('authorizationHeader', authorizationHeader)
 
     if (!authorizationHeader) {
       return next(ErrorService.UnauthorizedError())

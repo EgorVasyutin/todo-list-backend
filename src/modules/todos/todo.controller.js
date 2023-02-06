@@ -3,39 +3,58 @@ const todoService = require('./todo.service')
 const ErrorService = require('../../services/error.service')
 
 class TodoController {
-  async createTodo(req, res, next){
+  async createCard(req, res, next){
     try {
-      const { title ,isDone} = req.body
-      const newTodo = todoService.create(req.user.id, title, isDone)
+      const { title ,isDone, priority, status, type, startDate, endDate} = req.body
+      const newCard = todoService.create(title, isDone, priority, status, type,startDate, endDate)
 
-      return res.status(201).json(newTodo)
+      return res.status(201).json(newCard)
     } catch (e) {
       next(e)
     }
   }
 
-  async getTodos(req, res, next) {
+  async getOneCard(req, res, next) {
     try {
-      const todos = await todoService.getAll(req.user.id)
-      return res.status(200).json(todos)
+      const card = await todoService.getOne(req.params.id)
+      return res.status(200).json(card)
+
+    } catch (e) {
+      next(e)
+    }
+  }
+
+  async getCards(req, res, next) {
+    try {
+      const cards = await todoService.getAll()
+      return res.status(200).json(cards)
 
     } catch (e) {
       next(e)
     }
 
   }
-  // async getOneTodo(req, res){
-  //     const id = req.params.id
-  //     const todos = await db.query(`SELECT * FROM todo where id = $1`,[id])
-  //     res.json(todos.rows[0])
-  // }
+  // // async getOneTodo(req, res){
+  // //     const id = req.params.id
+  // //     const todos = await db.query(`SELECT * FROM todo where id = $1`,[id])
+  // //     res.json(todos.rows[0])
+  // // }
   async updateTodo(req, res, next) {
-    const { title ,isDone} = req.body
+    const { title, isDone, priority, type, startDate, endDate,} = req.body
     try {
-      console.log(title ,isDone, req.params.id)
-      const todos = await todoService.update(title ,isDone, req.params.id)
+      const cards = await todoService.update(title, isDone, priority, type, startDate, endDate, req.params.id)
 
-      return res.status(200).json(todos)
+      return res.status(200).json(cards)
+    } catch (e) {
+      next(e)
+    }
+  }
+
+  async patch(req, res, next) {
+    try {
+      const cards = await todoService.patch( req.body, req.params.id)
+
+      return res.status(200).json(cards)
     } catch (e) {
       next(e)
     }
@@ -43,9 +62,9 @@ class TodoController {
 
   async deleteTodo(req, res, next){
     try {
-      const todos = await todoService.delete(req.params.id)
+      const cards = await todoService.delete(req.params.id)
 
-      return res.status(200).json(todos)
+      return res.status(200).json(cards)
     } catch (e) {
       next(e)
     }
